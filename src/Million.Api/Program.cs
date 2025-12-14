@@ -8,8 +8,15 @@ using Million.Infrastructure.Common;
 using Million.Infrastructure.Data.Seeders;
 using Million.Api.Middleware;
 using Million.Infrastructure.Services;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 
@@ -107,6 +114,7 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
+app.UseSerilogRequestLogging();
 
 await SeedDatabaseAsync(app);
 

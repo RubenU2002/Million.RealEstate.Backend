@@ -10,7 +10,7 @@ El proyecto sigue los principios de Clean Architecture con las siguientes capas:
 - **Million.Application**: Casos de uso, DTOs, interfaces y lógica de aplicación (CQRS con MediatR)
 - **Million.Infrastructure**: Implementaciones de persistencia (EF Core), servicios externos
 - **Million.Api**: Capa de presentación con controladores REST
-- **Million.Tests**: Pruebas unitarias
+- **Million.Tests**: Pruebas unitarias (NUnit) con cobertura para handlers principales
 
 ## 🚀 Tecnologías
 
@@ -118,6 +118,8 @@ Usa el endpoint `/api/Auth/login` para obtener el token.
 - **GET /api/Properties/{id}**: Obtener propiedad por ID
 - **GET /api/Properties/owner/{ownerId}**: Obtener propiedades de un propietario
 - **POST /api/Properties**: Crear nueva propiedad (Protegido)
+- **POST /api/Properties/{id}/images**: Agregar imagen a propiedad (Protegido)
+- **PATCH /api/Properties/{id}/price**: Cambiar precio de propiedad (Protegido)
 - **PUT /api/Properties/{id}**: Actualizar propiedad (Protegido)
 - **DELETE /api/Properties/{id}**: Eliminar propiedad (Protegido)
 
@@ -147,7 +149,12 @@ Usa el endpoint `/api/Auth/login` para obtener el token.
   "codeInternal": "string",
   "year": "int",
   "ownerId": "guid",
-  "images": [],
+  "images": [
+      {
+          "file": "string (URL)",
+          "enabled": true
+      }
+  ],
   "traces": []
 }
 ```

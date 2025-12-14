@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Million.Application.Common.Extensions;
 using Million.Application.Common.Models;
 using Million.Application.Properties.Commands;
+using Million.Application.PropertyImages.Commands;
 using Million.Application.Properties.DTOs;
 using Million.Application.Properties.Queries;
 using Million.Domain.Entities;
@@ -258,6 +259,91 @@ public class PropertiesController : ControllerBase
             statusCode = 200
         });
     }
+
+    /// <summary>
+    /// Cambiar el precio de una propiedad
+    /// </summary>
+    /// <param name="id">ID de la propiedad</param>
+    /// <param name="request">Nuevo precio</param>
+    /// <returns>Resultado de la operación</returns>
+    [HttpPatch("{id:guid}/price")]
+    [Authorize(Roles = UserRoles.Owner)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UpdatePropertyPrice(Guid id, [FromBody] UpdatePropertyPriceRequest request)
+    {
+        var command = new UpdatePropertyPriceCommand(id, request.Price);
+        var result = await _mediator.Send(command);
+        
+        if (result.IsFailed)
+        {
+            var statusCode = result.GetStatusCode();
+            return StatusCode(statusCode, new
+            {
+                success = false,
+                error = result.GetFirstErrorMessage(),
+                statusCode = statusCode
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Property price updated successfully",
+            statusCode = 200
+        });
+    }
+
+    /// <summary>
+    /// Agregar una imagen a una propiedad
+    /// </summary>
+    /// <param name="id">ID de la propiedad</param>
+    /// <param name="request">Datos de la imagen</param>
+    /// <returns>ID de la imagen creada</returns>
+    [HttpPost("{id:guid}/images")]
+    [Authorize(Roles = UserRoles.Owner)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Guid>> AddPropertyImage(Guid id, [FromBody] AddPropertyImageRequest request)
+    {
+        var command = new AddPropertyImageCommand(id, request.File, request.Enabled);
+        var result = await _mediator.Send(command);
+        
+        if (result.IsFailed)
+        {
+            var statusCode = result.GetStatusCode();
+            return StatusCode(statusCode, new
+            {
+                success = false,
+                error = result.GetFirstErrorMessage(),
+                statusCode = statusCode
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            data = result.Value,
+            statusCode = 200
+        });
+    }
+}
+
+public class AddPropertyImageRequest
+{
+    public string File { get; set; } = string.Empty;
+    public bool Enabled { get; set; } = true;
+}
+
+public class UpdatePropertyPriceRequest
+{
+    public decimal Price { get; set; }
 }
 
 public class UpdatePropertyRequest

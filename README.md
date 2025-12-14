@@ -10,7 +10,7 @@ The project follows Clean Architecture principles with the following layers:
 - **Million.Application**: Use cases, DTOs, interfaces, and application logic (CQRS with MediatR)
 - **Million.Infrastructure**: Persistence implementations (EF Core), external services
 - **Million.Api**: Presentation layer with REST controllers
-- **Million.Tests**: Unit tests
+- **Million.Tests**: Unit tests (NUnit) with coverage for core handlers
 
 ## 🚀 Technologies
 
@@ -118,6 +118,8 @@ Use the `/api/Auth/login` endpoint to obtain the token.
 - **GET /api/Properties/{id}**: Get property by ID
 - **GET /api/Properties/owner/{ownerId}**: Get properties by owner
 - **POST /api/Properties**: Create new property (Protected)
+- **POST /api/Properties/{id}/images**: Add image to property (Protected)
+- **PATCH /api/Properties/{id}/price**: Change property price (Protected)
 - **PUT /api/Properties/{id}**: Update property (Protected)
 - **DELETE /api/Properties/{id}**: Delete property (Protected)
 
@@ -147,7 +149,12 @@ Use the `/api/Auth/login` endpoint to obtain the token.
   "codeInternal": "string",
   "year": "int",
   "ownerId": "guid",
-  "images": [],
+  "images": [
+     {
+        "file": "string (URL)",
+        "enabled": true
+     }
+  ],
   "traces": []
 }
 ```
